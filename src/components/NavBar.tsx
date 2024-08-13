@@ -1,8 +1,18 @@
+"use client";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import Link from "next/link";
+import { useEffect } from "react";
+import { fetchCurrentUser } from "../redux/features/auth/authSlice";
 import MaxWidthWrapper from "./MaxWidthWrapper";
 
 const NavBar = () => {
+  const dispatch = useAppDispatch();
+  const data = useAppSelector((state) => state.auth);
   const isLoggedIn = false;
+
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
 
   const options = (
     <>

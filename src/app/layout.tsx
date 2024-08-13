@@ -20,11 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavBar />
-        <div className="min-h-screen">
-          <ReduxProvider> {children}</ReduxProvider>
-        </div>
-        <Footer />
+        <ReduxProvider>
+          {" "}
+          <NavBar />
+          <div className="min-h-screen">{children}</div>
+          <Footer />
+        </ReduxProvider>
       </body>
     </html>
   );
