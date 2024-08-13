@@ -1,5 +1,11 @@
-export type SignUpUserType = {
+export type UserDataType = {
+  id?: string;
   name: string;
   email: string;
-  photo: string;
+  password: string;
+  photo?: FormData | string;
+  role?: string;
+  emailVerified?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 };

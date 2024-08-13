@@ -2,7 +2,7 @@ import Link from "next/link";
 import MaxWidthWrapper from "./MaxWidthWrapper";
 
 const NavBar = () => {
-  const isLoggedIn = true;
+  const isLoggedIn = false;
 
   const options = (
     <>

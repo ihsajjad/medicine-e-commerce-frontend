@@ -43,7 +43,14 @@ export function SignUpForm() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    const { name, email, password, photo } = data;
+
+    // converted the file into formData to send to the server
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("photo", photo);
   };
 
   return (
@@ -52,7 +59,11 @@ export function SignUpForm() {
         Wellcome to CareCube
       </h3>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          encType="multipart/form-data"
+          className="space-y-2"
+        >
           <FormField
             control={form.control}
             name="name"

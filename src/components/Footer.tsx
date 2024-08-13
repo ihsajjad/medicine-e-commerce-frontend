@@ -3,7 +3,7 @@ import MaxWidthWrapper from "./MaxWidthWrapper";
 
 const Footer = () => {
   return (
-    <footer className="bg-white shadow-xl shadow-[#00000010]">
+    <footer className="bg-white shadow-[0_-5px_20px_-1px_rgba(0,0,0,0.1),0_-2px_4px_-1px_rgba(0,0,0,0.06)]">
       <MaxWidthWrapper className="py-6">
         <div className="flex flex-col sm:flex-row sm:justify-between gap-5 mb-5">
           <div>
