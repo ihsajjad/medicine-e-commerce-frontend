@@ -87,7 +87,12 @@ export function SignUpForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Jhon Doe" type="text" {...field} />
+                  <Input
+                    required
+                    placeholder="Jhon Doe"
+                    type="text"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -101,6 +106,7 @@ export function SignUpForm() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    required
                     placeholder="example@gmail.com"
                     type="email"
                     {...field}
@@ -117,7 +123,12 @@ export function SignUpForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="Password" type="password" {...field} />
+                  <Input
+                    required
+                    placeholder="Password"
+                    type="password"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -131,6 +142,7 @@ export function SignUpForm() {
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input
+                    required
                     placeholder="Confirm Password"
                     type="password"
                     {...field}
@@ -164,7 +176,7 @@ export function SignUpForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
               <AiOutlineLoading3Quarters
                 size={24}

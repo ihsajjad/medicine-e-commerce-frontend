@@ -38,6 +38,32 @@ export const signUp = createAsyncThunk(
   }
 );
 
+export const signIn = createAsyncThunk(
+  "auth/signIn",
+  async (
+    formData: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await apiClient.post("/api/users/sign-in", formData);
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        // Server responded with a status other than 2xx
+        return rejectWithValue(
+          error.response.data.message || "An error occurred"
+        );
+      } else if (error.request) {
+        // Request was made but no response received
+        return rejectWithValue("No response from server");
+      } else {
+        // Something else happened
+        return rejectWithValue("An unexpected error occurred");
+      }
+    }
+  }
+);
+
 export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async () => {
@@ -59,6 +85,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // =================== Sign up =====================
       .addCase(signUp.pending, (state) => {
         state.isLoading = true;
         state.user = null;
@@ -77,13 +104,45 @@ const authSlice = createSlice({
         state.isError = true;
         state.errorMessage = action.payload as string;
       })
+      // =================== Sign In =====================
+      .addCase(signIn.pending, (state, action) => {
+        state.isLoading = true;
+        state.user = null;
+        state.isError = false;
+        state.errorMessage = null;
+      })
+      .addCase(signIn.fulfilled, (state, action: PayloadAction<AuthState>) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.isError = false;
+        state.errorMessage = null;
+      })
+      .addCase(signIn.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isError = true;
+        state.errorMessage = action.payload as string;
+      })
+      // =================== Current user =====================
+      .addCase(fetchCurrentUser.pending, (state, action) => {
+        state.isLoading = true;
+        state.user = null;
+        state.isError = false;
+        state.errorMessage = null;
+      })
       .addCase(
         fetchCurrentUser.fulfilled,
         (state, action: PayloadAction<AuthState>) => {
           state.isLoading = false;
           state.user = action.payload.user;
         }
-      );
+      )
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isError = true;
+        state.errorMessage = action.payload as string;
+      });
   },
 });
 
