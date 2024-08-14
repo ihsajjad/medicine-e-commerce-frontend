@@ -14,7 +14,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { errorToast, successToast } from "@/lib/utils";
+import { signUp } from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import Link from "next/link";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const formSchema = z
   .object({
@@ -36,13 +40,16 @@ const formSchema = z
   });
 
 export function SignUpForm() {
-  // ...
+  const dispatch = useAppDispatch();
+  const { isLoading, user, errorMessage } = useAppSelector(
+    (action) => action.auth
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { name, email, password, photo } = data;
 
     // converted the file into formData to send to the server
@@ -51,10 +58,19 @@ export function SignUpForm() {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("photo", photo);
+
+    const result = await dispatch(signUp(formData));
+
+    // Displying the toast
+    if (!!result.payload.user) {
+      successToast("Registration successful");
+    } else {
+      errorToast(result.payload);
+    }
   };
 
   return (
-    <div className="border border-primary rounded-md p-3 md:p-5">
+    <div className="border border-primary rounded-md p-3 md:p-5 bg-white/80 shadow-lg shadow-slate-300">
       <h3 className="text-2xl font-semibold text-center text-primary mb-1 md:mb-3">
         Wellcome to CareCube
       </h3>
@@ -149,7 +165,14 @@ export function SignUpForm() {
             )}
           />
           <Button type="submit" className="w-full">
-            Sign Up
+            {isLoading ? (
+              <AiOutlineLoading3Quarters
+                size={24}
+                className="animate-spin mx-auto my-0.5"
+              />
+            ) : (
+              "Sign Up"
+            )}
           </Button>
         </form>
       </Form>
