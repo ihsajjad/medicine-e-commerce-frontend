@@ -1,12 +1,33 @@
 "use client";
+import apiClient from "@/components/apiClient";
+import { errorToast, successToast } from "@/lib/utils";
+import { useAppSelector } from "@/redux/store";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const VerificationPage = () => {
-  const [code, setCode] = useState("");
-  const [timer, setTimer] = useState(60);
-  const [canRequestNewCode, setCanRequestNewCode] = useState(true);
+  const searchParams = useSearchParams();
+  const sendCode = searchParams.get("sendCode");
+  const shouldRequest =
+    (sendCode === "false" && true) || (sendCode === "true" && false);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [code, setCode] = useState<string>("");
+  const [timer, setTimer] = useState<number>(60);
+  const [canRequestNewCode, setCanRequestNewCode] =
+    useState<boolean>(shouldRequest);
+
+  const router = useRouter();
+
+  const data = useAppSelector((state) => state.auth);
 
   useEffect(() => {
+    //   redirecting the user if email is verified
+    if (data.user?.emailVerified) {
+      router.push("/dashboard");
+    }
+
     if (!canRequestNewCode) {
       const interval = setInterval(() => {
         setTimer((prev) => {
@@ -18,18 +39,34 @@ const VerificationPage = () => {
           return prev - 1;
         });
       }, 1000);
-
       return () => clearInterval(interval);
     }
-  }, [canRequestNewCode]);
+  }, [canRequestNewCode, data.user?.emailVerified, router]);
 
+  // Function to verify code
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(code);
+    try {
+      setIsLoading(true);
+      const res = await apiClient.post(`/api/users/verify-email?code=${code}`);
+      setIsLoading(false);
+
+      successToast(res.data.message);
+      router.push("/dashboard");
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
-  const handleRequestNewCode = async () => {};
+  const handleRequestNewCode = async () => {
+    try {
+      await apiClient.get("/api/users/verification-code");
+      setCanRequestNewCode(false);
+    } catch (error: any) {
+      errorToast(error.message);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -55,18 +92,28 @@ const VerificationPage = () => {
           </div>
           <button
             type="submit"
+            disabled={code.length !== 4}
             className="w-full py-2 px-4 bg-primary text-white font-semibold rounded-md shadow-sm hover:bg-primary/80"
           >
-            Verify
+            {isLoading ? (
+              <AiOutlineLoading3Quarters
+                size={24}
+                className="animate-spin mx-auto my-0.5"
+              />
+            ) : (
+              "Verify"
+            )}
           </button>
         </form>
         <div className="mt-4 flex items-center justify-between">
           <button
             onClick={handleRequestNewCode}
             disabled={!canRequestNewCode}
-            className="text-primary hover:underline disabled:text-gray-400"
+            className="text-primary hover:underline disabled:text-gray-500"
           >
-            {canRequestNewCode ? "Request New Code" : `Wait ${timer}s`}
+            {canRequestNewCode
+              ? "Request New Code"
+              : `Wait ${timer}s for new code.`}
           </button>
         </div>
       </div>

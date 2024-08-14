@@ -18,6 +18,7 @@ import { errorToast, successToast } from "@/lib/utils";
 import { signUp } from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const formSchema = z
@@ -40,6 +41,8 @@ const formSchema = z
   });
 
 export function SignUpForm() {
+  const router = useRouter();
+
   const dispatch = useAppDispatch();
   const { isLoading, user, errorMessage } = useAppSelector(
     (action) => action.auth
@@ -64,6 +67,13 @@ export function SignUpForm() {
     // Displying the toast
     if (!!result.payload.user) {
       successToast("Registration successful");
+
+      const isVerified = result.payload.user.emailVerified;
+      if (isVerified) {
+        router.push("/dashboard");
+      } else {
+        router.push(`/verify-account?sendCode=true`);
+      }
     } else {
       errorToast(result.payload);
     }

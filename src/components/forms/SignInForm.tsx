@@ -18,6 +18,7 @@ import { errorToast, successToast } from "@/lib/utils";
 import { signIn } from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export const signInSchema = z.object({
@@ -30,8 +31,7 @@ export function SignInForm() {
   const { isLoading, user, errorMessage } = useAppSelector(
     (action) => action.auth
   );
-
-  console.log(user);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -47,6 +47,13 @@ export function SignInForm() {
     // Displying the toast
     if (!!result.payload.user) {
       successToast("Sign in successful");
+
+      const isVerified = result.payload.user.emailVerified;
+      if (isVerified) {
+        router.push("/dashboard");
+      } else {
+        router.push(`/verify-account?sendCode=false`);
+      }
     } else {
       errorToast(result.payload);
     }

@@ -9,6 +9,7 @@ const NavBar = () => {
   const dispatch = useAppDispatch();
   const data = useAppSelector((state) => state.auth);
   const isLoggedIn = false;
+  console.log(data);
 
   useEffect(() => {
     dispatch(fetchCurrentUser());
