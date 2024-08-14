@@ -72,6 +72,11 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
+export const signOut = createAsyncThunk("auth/signOut", async () => {
+  await apiClient.post("/api/users/sign-out"); // Make sure this route exists
+  return;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -142,6 +147,12 @@ const authSlice = createSlice({
         state.user = null;
         state.isError = true;
         state.errorMessage = action.payload as string;
+      })
+      .addCase(signOut.fulfilled, (state) => {
+        (state.user = null),
+          (state.isLoading = false),
+          (state.isError = false),
+          (state.errorMessage = null);
       });
   },
 });
